@@ -1,0 +1,9 @@
+.linkButton {
+    /* display: inline-block; */
+    background-color: #fff;
+    height: 40px;
+    outline: none;
+    border: none;
+    color: green;
+    cursor: pointer;
+}

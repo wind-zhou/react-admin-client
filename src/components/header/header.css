@@ -5,10 +5,12 @@
 
 .header-top {
     height: 40px;
-    text-align: right;
     border-bottom: 1px green solid;
     line-height: 40px;
     padding-right: 30px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
 }
 
 .header-bottom {

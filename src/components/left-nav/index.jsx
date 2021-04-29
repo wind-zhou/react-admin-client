@@ -47,6 +47,7 @@ class LeftNav extends Component {
     });
   };
 
+
   componentWillMount(){
     // 在frender之前执行，为第一次执行准备数据
     // 必须是同步的动作
@@ -57,8 +58,7 @@ class LeftNav extends Component {
   render() {
     // 获取当前的路由路径
     const path = this.props.location.pathname;
-    console.log(this);
-    console.log(this.openKey);
+
     return (
       <div className="left-nav">
         <div className="left-nav-header">

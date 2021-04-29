@@ -31,6 +31,7 @@ export default function ajax(url, data = {}, type = 'GET') { //封装一个ajax
 
             }).catch((error) => { //请求出错也不reject，而是现实错误提示
                 message.error('请求出错', error.message)
+                console.log(error.message)
 
             })
         })
