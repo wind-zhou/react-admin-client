@@ -1,0 +1,10 @@
+.operation {
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+}
+
+.operation>button {
+    background-color: #fff !important;
+    color: green;
+}
