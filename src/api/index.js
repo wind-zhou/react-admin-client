@@ -35,14 +35,3 @@ export const reqAddCategory = (parentId, categoryName) => ajax(BASE + '/manage/c
 // 更新（修改）商品种类
 
 export const reqUpdateCategory = (categoryId, categoryName) => ajax(BASE + '/manage/category/update', { categoryId, categoryName }, 'POST')
-
-
-
-reqUpdateCategory('608a713767cadf3bb6ad70f5', '嘿嘿嘿1111').then((value) => {
-
-    console.log('update', value)
-
-}).catch((error) => {
-    console.log(error)
-
-})
