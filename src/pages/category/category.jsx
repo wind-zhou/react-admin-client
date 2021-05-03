@@ -1,8 +1,8 @@
 import React, { Component } from "react";
 import LinkBUtton from "../../components/link-button";
-import { PlusOutlined } from "@ant-design/icons";
+import { PlusOutlined, ExclamationCircleOutlined } from "@ant-design/icons";
 import { Card, message } from "antd";
-import { Table } from "antd";
+import { Table, Modal } from "antd";
 
 import { reqCategorys } from "../../api/index";
 import "antd/dist/antd.css";
@@ -14,7 +14,8 @@ export default class Category extends Component {
     categorys: [], //一级列表的数据
     parentId: "0", //当前列表的父类id,默认取一级
     parentName: "",
-    subCategorys: [] //子分类列表数据
+    subCategorys: [], //子分类列表数据
+    modalState: 0 //控制两个modal的显示隐藏，共三种状态 （1）0 都隐藏（2）1 add 显示 （3）2 update显示
   };
 
   // 初始化列
@@ -32,7 +33,7 @@ export default class Category extends Component {
           //返回界面显示标签，参数为每一行的分类对象（antd的语法糖）
           return (
             <div className="operation">
-              <LinkBUtton>修改分类</LinkBUtton>
+              <LinkBUtton onClick={this.updateCategory}>修改分类</LinkBUtton>
 
               {/* 条件渲染，但显示自己项时，不渲染 */}
               {this.state.parentId === "0" ? (
@@ -49,20 +50,23 @@ export default class Category extends Component {
 
   //获取categorys（一级或二级）
   getCategory = async () => {
+    // console.log("@loading 即将进入loading");
     // 请求前加载loading
     this.setState({
       isLoading: true
     });
-
+    // console.log("@loading  loading已显示");
     const { parentId } = this.state;
 
     // 发送异步ajax请求
     const result = await reqCategorys(parentId);
-
+    // console.log("@  数据请求结束，即将取消loading");
     // 请求完成后，取消loading
     this.setState({
       isLoading: false
     });
+
+    console.log("@  loading取消结束");
     if (result.status === 0) {
       // 取出分类列表数据
       const categorys = result.data;
@@ -84,7 +88,6 @@ export default class Category extends Component {
   };
 
   // 显示一级对象的子分类列表
-
   showSubCategorys = category => {
     // (1)更新状态
     this.setState(
@@ -100,15 +103,37 @@ export default class Category extends Component {
       }
     );
   };
-  // 点击切换至一级列表项
-  tranferToFather=() => {
 
+  // 点击添加category
+  addCategory = () => {
     this.setState({
-      parentId:'0'
-    })
-    
-  }
-  
+      modalState: 1
+    });
+  };
+
+  // 点击修改更新category
+  updateCategory = () => {
+    this.setState({
+      modalState: 2
+    });
+  };
+
+  // 隐藏当前的modal
+  handleCancel = () => {
+
+    console.log("取消modal")
+    this.setState({
+      modalState: 0
+    });
+  };
+
+  // 点击切换至一级列表项
+  tranferToFather = () => {
+    this.setState({
+      parentId: "0"
+    });
+  };
+
   // 为第一次render提供初始化数据
   componentWillMount() {
     // 初始化table的列
@@ -121,6 +146,7 @@ export default class Category extends Component {
   }
 
   render() {
+    // console.log("render()");
     const {
       categorys,
       isLoading,
@@ -140,13 +166,13 @@ export default class Category extends Component {
         </span>
       );
     const extra = (
-      <LinkBUtton>
+      <LinkBUtton onClick={this.addCategory}>
         <PlusOutlined />
         添加
       </LinkBUtton>
     );
 
-    console.log("render():", parentId);
+
     return (
       <div>
         <Card
@@ -167,6 +193,23 @@ export default class Category extends Component {
             }}
             rowKey="_id"
           />
+
+          <Modal
+            title="添加商品"
+            visible={this.state.modalState === 1 ? true : false}
+            onOk={this.addCategory}
+            onCancel={this.handleCancel}
+          >
+            <p>增加商品</p>
+          </Modal>
+          <Modal
+            title="更新商品"
+            visible={this.state.modalState === 2 ? true : false}
+            onOk={this.updateCategory}
+            onCancel={this.handleCancel}
+          >
+            <p>更新商品</p>
+          </Modal>
         </Card>
       </div>
     );

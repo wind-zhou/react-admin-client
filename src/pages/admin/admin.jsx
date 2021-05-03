@@ -23,7 +23,6 @@ const { Footer, Sider, Content } = Layout;
 // 管理的路由组件
 export default class Admin extends Component {
   render() {
-    console.log(memoryUser.user);
 
     const user = memoryUser.user.data;
     if (!user || !user._id) {
@@ -38,7 +37,7 @@ export default class Admin extends Component {
           <LeftNav />
         </Sider>
         <Layout>
-          <Header>Header</Header>
+          <Header></Header>
           <Content style={{ backgroundColor: "#ccc" }}>
             <Switch>
               <Route path="/home" component={Home} />

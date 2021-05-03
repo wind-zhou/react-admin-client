@@ -37,9 +37,7 @@ class LeftNav extends Component {
           <SubMenu key={item.key} icon={item.icon} title={item.title}>
             {this.getMenuFromList(item.children)}
             {/* 使用递归进行遍历 */}
-
             {/* (1)判断当前的路径path是不是二级向里的*/}
-
             {/* (2)如果是，则将当前项的key存起来，作为 defaultOpenKeys的值*/}
           </SubMenu>
         );
@@ -47,12 +45,11 @@ class LeftNav extends Component {
     });
   };
 
-
-  componentWillMount(){
+  componentWillMount() {
     // 在frender之前执行，为第一次执行准备数据
     // 必须是同步的动作
     // 这里是一次优化，如果写在render里，每次更新都会中心计算一次，没有必要，写在这里，只会执行一次。（因为他只需执行一次）
-    this.menunodes=this.getMenuFromList(menuList)
+    this.menunodes = this.getMenuFromList(menuList);
   }
 
   render() {

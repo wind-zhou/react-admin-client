@@ -64,6 +64,8 @@ class Header extends Component {
   };
   // 点击退出
   louOut = () => {
+
+    // 调用对话框函数
     Modal.confirm({
       content: "确定要退出吗？",
       onOk: () => {
