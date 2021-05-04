@@ -4,26 +4,48 @@ import { Select } from "antd";
 const { Option } = Select;
 
 export default class AddForm extends Component {
-  // 表演验证成功后的回调函数
-  onFinish = values => {
-    console.log(values);
+  // 创建form的挂载点ref
+  // formRef = React.createRef();
+
+  tranfer = () => {
+    this.props.getFormOfAdd(this.formRef);
+    // console.log(this.formRef.getFieldValue());
   };
 
+  UNSAFE_componentWillReceiveProps(props) {
+    console.log(this.formRef.setFieldsValue({ currentId: props.parentId }));
+  }
+
   render() {
+    const { categorys, parentId } = this.props;
+
+    console.log("执行了子组件,parentID=", parentId);
+
     return (
       <div>
-        <Form onFinish={this.onFinish}>
-          <p>所属分类</p>
-          <Form.Item>
-            <Select placeholder="Select a person" defaultValue="0">
+        <Form
+          onFieldsChange={this.tranfer}
+          ref={element => {
+            this.formRef = element;
+          }}
+          initialValues={{ currentId: parentId }}
+        >
+          <Form.Item name="currentId" label="所属分类">
+            <Select key={new Date().getTime()}>
               <Option value="0">一级列表</Option>
-              <Option value="1">手机</Option>
-              <Option value="2">彩电</Option>
+              {categorys.map(item => {
+                return (
+                  <Option value={item._id} key={item._id}>
+                    {item.name}
+                  </Option>
+                );
+              })}
             </Select>
           </Form.Item>
 
           <Form.Item
-            name="username"
+            label="分类名称"
+            name="categoryName"
             rules={[
               {
                 required: true,
@@ -31,7 +53,6 @@ export default class AddForm extends Component {
               }
             ]}
           >
-            <p>分类名称</p>
             <Input placeholder="请输入分类名称" />
           </Form.Item>
         </Form>

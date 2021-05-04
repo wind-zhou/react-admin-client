@@ -6,7 +6,11 @@ import { Table, Modal } from "antd";
 import AddForm from "./add-form";
 import UpdateForm from "./update-form";
 
-import { reqCategorys, reqUpdateCategory } from "../../api/index";
+import {
+  reqCategorys,
+  reqUpdateCategory,
+  reqAddCategory
+} from "../../api/index";
 import "antd/dist/antd.css";
 import "./category.css";
 
@@ -24,6 +28,13 @@ export default class Category extends Component {
   // 定义回调函数函数们勇于父子传值
   getNameToFather = newContent => {
     this.nameFromSon = newContent; //将传过来的值存储在自定义字段，否则，父组件的再次更新会导致子组件再次更新
+  };
+
+  // 定义回调函数，接收子类的form对象
+  getFormOfAdd = sonForm => {
+    console.log("调用了一次传值函数");
+    this.form = sonForm;
+    // console.log(this.form.getFieldValue())
   };
 
   // 初始化列
@@ -59,13 +70,13 @@ export default class Category extends Component {
   };
 
   //获取categorys（一级或二级）
-  getCategory = async () => {
+  getCategory = async newparentId => {
     // 请求前加载loading
     this.setState({
       isLoading: true
     });
 
-    const { parentId } = this.state;
+    const parentId = newparentId || this.state.parentId;
 
     // 发送异步ajax请求
     const result = await reqCategorys(parentId);
@@ -75,7 +86,7 @@ export default class Category extends Component {
     });
     if (result.status === 0) {
       // 取出分类列表数据
-      const categorys = result.data;
+      const categorys = result.data.reverse();
 
       if (parentId === "0") {
         // 更新一级分类数据
@@ -141,7 +152,33 @@ export default class Category extends Component {
     }
   };
 
+  // 确认添加商品
+  confirmToAdd = async () => {
+    //  1、隐藏
+    this.setState({
+      modalState: 0
+    });
+    // 2、发送ajax请求
+    const { currentId, categoryName } = this.form.getFieldValue();
 
+    console.log(currentId, categoryName);
+
+    // 2、发送更新请求
+    const staus = await reqAddCategory(currentId, categoryName);
+
+    if (staus.status === 0) {
+      if (this.state.parentId === currentId) {
+        //同级添加同级
+        // 3、重新显示
+        this.getCategory(currentId);
+      } else if (currentId === "0") {
+        //在二级添加一级
+        this.getCategory("0");
+      }
+    }
+
+    this.form.resetFields();
+  };
 
   // 隐藏当前的modal
   handleCancel = () => {
@@ -170,7 +207,6 @@ export default class Category extends Component {
   }
 
   render() {
-    // console.log("render()");
     const {
       categorys,
       isLoading,
@@ -223,10 +259,14 @@ export default class Category extends Component {
           <Modal
             title="添加商品"
             visible={this.state.modalState === 1 ? true : false}
-            onOk={this.addCategory}
+            onOk={this.confirmToAdd}
             onCancel={this.handleCancel}
           >
-            <AddForm />
+            <AddForm
+              categorys={categorys}
+              parentId={parentId}
+              getFormOfAdd={this.getFormOfAdd}
+            />
           </Modal>
           <Modal
             title="更新商品"
