@@ -18,7 +18,6 @@ export default class UpdateForm extends Component {
   }
 
   componentWillReceiveProps(props) {
-    
     console.log("执行了一次componentWillReceiveProps")
     this.setState({
       name: props.category.name
@@ -41,6 +40,7 @@ export default class UpdateForm extends Component {
   };
 
   render() {
+
     return (
       <div>
         <Form>

@@ -154,6 +154,8 @@ export default class Category extends Component {
 
   // 确认添加商品
   confirmToAdd = async () => {
+    // 表单验证
+
     //  1、隐藏
     this.setState({
       modalState: 0

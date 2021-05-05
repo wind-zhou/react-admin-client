@@ -18,7 +18,6 @@ export default class AddForm extends Component {
 
   render() {
     const { categorys, parentId } = this.props;
-
     console.log("执行了子组件,parentID=", parentId);
 
     return (
