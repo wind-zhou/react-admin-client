@@ -25,7 +25,12 @@ class LeftNav extends Component {
       } else {
         //有二级项
         const citem = item.children.find(citem => {
-          return citem.key === path;
+          //  /product 或/product/details
+          const newPath = path.slice(
+            0,
+            path.indexOf("/", 1) === -1 ? undefined : path.indexOf("/", 1)
+          );
+          return citem.key === newPath;
         });
 
         if (citem) {
@@ -55,6 +60,11 @@ class LeftNav extends Component {
   render() {
     // 获取当前的路由路径
     const path = this.props.location.pathname;
+    // 判断一下这个路径，是不是有二级路由，如果有的话也显示  /product 或/product/details都要显示
+    const newPath = path.slice(
+      0,
+      path.indexOf("/", 1) === -1 ? undefined : path.indexOf("/", 1)
+    );
 
     return (
       <div className="left-nav">
@@ -67,7 +77,7 @@ class LeftNav extends Component {
 
         <div>
           <Menu
-            selectedKeys={[path]} //默认选中
+            selectedKeys={[newPath]} //默认选中
             defaultOpenKeys={[this.openKey]}
             mode="inline"
             theme="dark"
