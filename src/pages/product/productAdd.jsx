@@ -1,5 +1,6 @@
 import React, { Component } from "react";
 import { Card, Input, Button, Form, Select, Cascader } from "antd";
+import { reqCategorys } from "../../api/index";
 
 import { LeftCircleTwoTone } from "@ant-design/icons";
 
@@ -7,18 +8,7 @@ const { TextArea } = Input;
 
 export default class ProductAdd extends Component {
   state = {
-    optionLists: [
-      {
-        value: "zhejiang",
-        label: "Zhejiang",
-        isLeaf: false
-      },
-      {
-        value: "jiangsu",
-        label: "Jiangsu",
-        isLeaf: false
-      }
-    ]
+    optionLists: []
   };
   onFinish = () => {
     //表单验证成功时的回调函数
@@ -27,35 +17,68 @@ export default class ProductAdd extends Component {
   };
 
   //加载数据的函数（里面可以放一些ajax请求）  ---什么时候触发呢？
-  loadData = selectedOptions => {
-    console.log("触发了加载函数", this.state.optionLists);
+  loadData = async selectedOptions => {
     const targetOption = selectedOptions[0]; //拿到当前的数据对象,这里是浅拷贝
-
-    console.log("targetOption", targetOption);
     targetOption.loading = true; //开启加载loading
 
-    // load options lazily
-    setTimeout(() => {
-      // debugger;
-      targetOption.loading = false;
-      targetOption.children = [
-        //将异步请求到的数据塞到children的位置
-        {
-          label: `${targetOption.label} Dynamic 1`,
-          value: "dynamic1"
-        },
-        {
-          label: `${targetOption.label} Dynamic 2`,
-          value: "dynamic2"
-        }
-      ];
-      this.setState({
-        optionLists: [...this.state.optionLists]
-      });
-    }, 100);
+    // 请求二级项
+    const subCategory = await this.getCategorys(targetOption.value);
+    targetOption.loading = false; //开启加载loading
+
+    // 判断是否有二级项
+
+    if (!subCategory || subCategory.length === 0) {
+      targetOption.isLeaf = true;
+    } else {
+      targetOption.children = subCategory;
+    }
+
+    this.setState({
+      //重新设置数据
+      optionLists: [...this.state.optionLists]
+    });
+    //这里的optionLists已经发生了改变，因为该函数的形参是一个对象，属于optionLists的浅拷贝
   };
 
-  //
+  // 请求一级列表
+
+  getCategorys = async parentId => {
+    const result = await reqCategorys(parentId);
+    if (parentId === "0") {
+      //如果请求的是一级列表
+      if (result.status === 0) {
+        const newOptionList = result.data.map(category => {
+          return {
+            value: category._id,
+            label: category.name,
+            isLeaf: false //这里有一个问题，如何判断一级列表有没有自己列表呢？
+          };
+        });
+
+        this.setState({
+          optionLists: newOptionList
+        });
+      }
+    } else {
+      //如果请求二级项，则返回
+
+      if (result.status === 0) {
+        const newOptionList = result.data.map(category => {
+          return {
+            value: category._id,
+            label: category.name,
+            isLeaf: true //这里有一个问题，如何判断一级列表有没有自己列表呢？
+          };
+        });
+        return newOptionList;
+      }
+    }
+  };
+
+  //发送ajax，请求一级列表
+  componentDidMount() {
+    this.getCategorys("0");
+  }
 
   render() {
     const title = (
