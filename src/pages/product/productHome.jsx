@@ -71,7 +71,14 @@ export default class ProductHome extends Component {
                 详情
               </span>
               <br />
-              <span style={{ color: "green", cursor: "pointer" }}>修改</span>
+              <span
+                style={{ color: "green", cursor: "pointer" }}
+                onClick={() => {
+                  this.props.history.push("/product/add");
+                }}
+              >
+                修改
+              </span>
             </>
           );
         }
@@ -169,7 +176,11 @@ export default class ProductHome extends Component {
 
     const extra = (
       <span>
-        <LinkBUtton>
+        <LinkBUtton
+          onClick={() => {
+            this.props.history.push("/product/add");
+          }}
+        >
           <PlusOutlined />
           添加
         </LinkBUtton>
