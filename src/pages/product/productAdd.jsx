@@ -10,8 +10,10 @@ export default class ProductAdd extends Component {
   state = {
     optionLists: []
   };
-  onFinish = () => {
+  onFinish = value => {
     //表单验证成功时的回调函数
+
+    console.log(value);
 
     alert("发送ajax请求");
   };
@@ -41,12 +43,13 @@ export default class ProductAdd extends Component {
   };
 
   // 请求一级列表
-
   getCategorys = async parentId => {
     const result = await reqCategorys(parentId);
     if (parentId === "0") {
       //如果请求的是一级列表
       if (result.status === 0) {
+        /* ----------------------------------------------- */
+        // 请求一级列表的数据
         const newOptionList = result.data.map(category => {
           return {
             value: category._id,
@@ -55,25 +58,73 @@ export default class ProductAdd extends Component {
           };
         });
 
+        /* ------------------------------ */
+        //如果是点击修改进来，则需要请求时就把二级列表页请求回来并做展示
+        // const { pCategoryId } = this.product;
+
+        if (this.isUpdate && this.product.pCategoryId !== "0") {
+          //这肯定是有二级列表了
+          const result = await reqCategorys(this.product.pCategoryId);
+          if (result.status === 0) {
+            //接收二级到数据，修改成optionList的形式
+            const subCategorys = result.data.map(category => {
+              return {
+                value: category._id,
+                label: category.name,
+                isLeaf: true
+              };
+            });
+
+            console.log("---------------------------------");
+            console.log(subCategorys);
+            console.log("---------------------------------");
+
+            // 查找targetOption
+            const targetOption = newOptionList.find(item => {
+              return item.value === this.product.pCategoryId;
+            });
+
+            // 添加到children字段至查找targetOption
+            targetOption.children = subCategorys;
+
+            console.log("---------------------------------");
+            console.log(newOptionList);
+            console.log("---------------------------------");
+          }
+        }
+
+        /* ------------------------------ */
         this.setState({
           optionLists: newOptionList
         });
       }
     } else {
       //如果请求二级项，则返回
-
       if (result.status === 0) {
         const newOptionList = result.data.map(category => {
           return {
             value: category._id,
             label: category.name,
-            isLeaf: true //这里有一个问题，如何判断一级列表有没有自己列表呢？
+            isLeaf: true
           };
         });
         return newOptionList;
       }
     }
   };
+
+  // 但点击修改进来时，做数据的预处理
+  UNSAFE_componentWillMount() {
+    // 取到传递过来的product
+    const product = this.props.location.state;
+    // 这时候要告知组件填入我传过来的数据
+    // 怎么区分’添加‘进入还是‘修改’进入呢？需要一个字段，然后组件的值根据字段取相应变化
+
+    this.isUpdate = !!product; //作用：将其转化为bool，如果优质则为true。当然也可以进行if判断
+    console.log(product);
+
+    this.product = product; //挂载到下实例上，请求时会用到
+  }
 
   //发送ajax，请求一级列表
   componentDidMount() {
@@ -101,6 +152,20 @@ export default class ProductAdd extends Component {
       }
     };
 
+    const product = this.props.location.state || {};
+    const { pCategoryId, categoryId } = product;
+
+    let categorys = [];
+
+    if (this.isUpdate) {
+      if (pCategoryId === "0") {
+        categorys.push(categoryId);
+      } else {
+        categorys.push(pCategoryId);
+        categorys.push(categoryId);
+      }
+    }
+
     return (
       <Card title={title} style={{ width: "90%", margin: "20px auto" }}>
         <Form
@@ -108,6 +173,12 @@ export default class ProductAdd extends Component {
           // form={form}
           name="register"
           onFinish={this.onFinish}
+          initialValues={{
+            productName: product.name,
+            ProductDesc: product.desc,
+            ProductPrice: product.price,
+            ProductCategory: categorys
+          }}
         >
           <Form.Item
             name="productName"

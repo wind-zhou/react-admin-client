@@ -41,7 +41,7 @@ export default class ProductHome extends Component {
         render: product => {
           const { _id, status } = product; //status控制状态，1 代表在售，2代表已下架
 
-          console.log("当前的status值为：", status);
+          // console.log("当前的status值为：", status);
           return (
             <>
               <LinkBUtton
@@ -59,7 +59,6 @@ export default class ProductHome extends Component {
         width: 150,
         title: "操作",
         render: product => {
-          // console.log(product);
           return (
             <>
               <span
@@ -74,7 +73,7 @@ export default class ProductHome extends Component {
               <span
                 style={{ color: "green", cursor: "pointer" }}
                 onClick={() => {
-                  this.props.history.push("/product/add");
+                  this.props.history.push("/product/add", product);
                 }}
               >
                 修改
