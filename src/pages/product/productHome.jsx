@@ -105,9 +105,9 @@ export default class ProductHome extends Component {
     // 判断一般请求还是搜索请求
 
     let result;
-    if (srarchName === "") {
+    if (srarchName === "") {  //普通显示数据请求
       result = await reqProducts(pageNum, PAGE_SIZE);
-    } else {
+    } else {  //搜索
       result = await reqSearch(pageNum, PAGE_SIZE, srarchName, searchType);
     }
 

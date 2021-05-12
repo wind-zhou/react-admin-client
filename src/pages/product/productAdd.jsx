@@ -18,6 +18,9 @@ export default class ProductAdd extends Component {
     alert("发送ajax请求");
   };
 
+
+  
+
   //加载数据的函数（里面可以放一些ajax请求）  ---什么时候触发呢？
   loadData = async selectedOptions => {
     const targetOption = selectedOptions[0]; //拿到当前的数据对象,这里是浅拷贝
@@ -41,6 +44,9 @@ export default class ProductAdd extends Component {
     });
     //这里的optionLists已经发生了改变，因为该函数的形参是一个对象，属于optionLists的浅拷贝
   };
+
+
+
 
   // 请求一级列表
   getCategorys = async parentId => {

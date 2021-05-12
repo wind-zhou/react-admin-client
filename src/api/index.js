@@ -57,3 +57,11 @@ export const reqProductCategory = (categoryId) => ajax(BASE + '/manage/category/
 // 下架商家商品
 
 export const reqUpdataStatus = (productId, status) => ajax(BASE + '/manage/product/updateStatus', { productId, status }, 'PSOT')
+
+
+// 过去roles列表
+export const reqRoles = () => ajax(BASE + '/manage/role/list')
+
+// 添加role
+
+export const reqAddRoles = (roleName) => ajax(BASE + '/manage/role/add', { roleName }, 'POST')
